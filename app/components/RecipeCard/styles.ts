@@ -52,6 +52,31 @@ export const Container = styled.div`
   }
 
   .recipe-content {
+    .recipe-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .category-badge {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: rgba(134, 197, 64, 0.12);
+      color: #4a8f15;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .cook-time {
+      font-size: 0.75rem;
+      color: #6b7280;
+      font-weight: 500;
+    }
+
     .recipe-title {
       font-size: 1.25rem;
       font-weight: 600;
@@ -74,9 +99,15 @@ export const Container = styled.div`
       overflow: hidden;
     }
 
-    .recipe-meta {
-      font-size: 0.875rem;
-      color: #5DC2D1;
+    .recipe-stats {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+    }
+
+    .stat-item {
+      font-size: 0.8125rem;
+      color: #6b7280;
       font-weight: 500;
     }
   }

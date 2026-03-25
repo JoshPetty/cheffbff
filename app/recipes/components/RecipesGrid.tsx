@@ -2,12 +2,24 @@ import { RecipeCard } from "@/app/components/RecipeCard/RecipeCard";
 import Link from "next/link";
 import { Container } from "./styles";
 
+interface Author {
+  username: string | null;
+  avatar_url: string | null;
+}
+
 interface Recipe {
   id: string;
   title: string;
   description: string | null;
   image_url: string | null;
   ingredients: string[] | null;
+  author: Author | null;
+  likesCount?: number;
+  commentsCount?: number;
+  savesCount?: number;
+  category?: string | null;
+  cook_time?: number | null;
+  prep_time?: number | null;
 }
 
 interface RecipesGridProps {

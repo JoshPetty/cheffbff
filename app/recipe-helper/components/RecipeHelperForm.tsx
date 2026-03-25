@@ -80,7 +80,7 @@ export function RecipeHelperForm() {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/match", {
+      const response = await fetch("/api/match", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

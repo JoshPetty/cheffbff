@@ -62,28 +62,39 @@ export const Container = styled.nav`
       transition: color 0.3s;
 
       &:hover {
-        color: #86C540; /* Logo green */
+        color: #86C540;
       }
 
       &.active {
-        color: #86C540; /* Logo green */
+        color: #86C540;
         border-bottom: 2px solid #86C540;
         padding-bottom: 0.25rem;
       }
 
       &.button {
         padding: 0.5rem 1.5rem;
-        background: linear-gradient(135deg, #86C540, #5DC2D1); /* Green to blue gradient */
+        background: linear-gradient(135deg, #86C540, #5DC2D1);
         color: white;
         border-radius: 0.375rem;
         border-bottom: none;
-        
+        margin-right: 0.5rem;
+
         &:hover {
           background: linear-gradient(135deg, #76B530, #4DB2C1);
           color: white;
         }
       }
     }
+
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+
+  .auth-section {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 
     @media (max-width: 768px) {
       display: none;
