@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Container } from "./styles";
 import { LikeButton } from "./LikeButton";
+import { LibraryButton } from "./LibraryButton";
 import { SaveToCollection } from "./SaveToCollection";
 import { parseIngredient } from "@/app/recipes/ingredientUtils";
 
@@ -88,9 +89,10 @@ export function RecipeDetail({ recipe, author, likeCount }: RecipeDetailProps) {
             </span>
           </div>
 
-          {/* Like + Save row */}
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.5rem" }}>
+          {/* Like + Library + Collections row */}
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.5rem", flexWrap: "wrap" }}>
             <LikeButton recipeId={recipe.id} initialCount={likeCount} />
+            <LibraryButton recipeId={recipe.id} />
             <SaveToCollection recipeId={recipe.id} />
           </div>
 

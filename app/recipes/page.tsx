@@ -23,7 +23,8 @@ export default async function RecipesPage({
     .from("recipes")
     .select(
       "id, title, description, image_url, ingredients, user_id, created_at, category, cook_time, prep_time"
-    );
+    )
+    .eq("is_public", true);
 
   if (q.trim().length > 1) {
     query = query.or(
@@ -73,7 +74,7 @@ export default async function RecipesPage({
         ? supabase.from("comments").select("recipe_id").in("recipe_id", recipeIds)
         : { data: [] },
       recipeIds.length
-        ? supabase.from("collection_recipes").select("recipe_id").in("recipe_id", recipeIds)
+        ? supabase.from("library").select("recipe_id").in("recipe_id", recipeIds)
         : { data: [] },
     ]);
 
@@ -112,7 +113,7 @@ export default async function RecipesPage({
     q !== "" || category !== "" || cookTime !== "" || sort !== "newest";
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <Navigation />
       <main style={{ paddingTop: "5rem" }}>
         <div style={{ maxWidth: "80rem", margin: "0 auto", padding: "3rem 2rem" }}>

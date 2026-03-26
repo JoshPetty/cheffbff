@@ -15,6 +15,7 @@ interface Recipe {
   description: string | null;
   image_url: string | null;
   ingredients: string[] | null;
+  is_public: boolean;
 }
 
 interface Profile {
@@ -70,7 +71,7 @@ export default function ProfilePage() {
 
       const { data: recipes } = await supabase
         .from("recipes")
-        .select("id, title, description, image_url, ingredients")
+        .select("id, title, description, image_url, ingredients, is_public")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
       setMyRecipes(recipes ?? []);
@@ -158,7 +159,7 @@ export default function ProfilePage() {
   // ── Loading ────────────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen">
         <Navigation />
         <main style={{ paddingTop: "5rem" }}>
           <div style={s.centered}><span style={{ color: "#9ca3af", fontSize: 14 }}>Loading…</span></div>
@@ -171,7 +172,7 @@ export default function ProfilePage() {
   // ── Not logged in ──────────────────────────────────────────────────────────
   if (!user) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen">
         <Navigation />
         <main style={{ paddingTop: "5rem" }}>
           <div style={s.centered}>
@@ -361,6 +362,20 @@ export default function ProfilePage() {
                 {myRecipes.map((recipe) => (
                   <div key={recipe.id} style={{ position: "relative" }} className="recipe-card-wrapper">
                     <RecipeCard recipe={recipe} />
+                    {/* Private badge */}
+                    {!recipe.is_public && (
+                      <div style={{
+                        position: "absolute", top: 8, left: 8,
+                        background: "rgba(17,24,39,0.7)", color: "#fff",
+                        borderRadius: 6, padding: "3px 9px",
+                        fontSize: 11, fontWeight: 700,
+                        display: "flex", alignItems: "center", gap: "0.3rem",
+                        backdropFilter: "blur(4px)",
+                        pointerEvents: "none",
+                      }}>
+                        🔒 Private
+                      </div>
+                    )}
                     <Link
                       href={`/recipes/${recipe.id}/edit`}
                       style={{

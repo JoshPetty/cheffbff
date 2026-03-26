@@ -4,11 +4,13 @@ import styled from "styled-components";
 
 export const Container = styled.section`
   padding: 8rem 2rem 6rem;
-  
+  background: linear-gradient(135deg, #f8fdf2 0%, #f0fdf9 50%, #f0fbfd 100%);
+
   .hero-content {
     max-width: 56rem;
     margin: 0 auto;
     text-align: center;
+    
   }
 
   h1 {

@@ -5,7 +5,7 @@ import styled from "styled-components";
 export const Container = styled.nav`
   position: fixed;
   width: 100%;
-  background: rgba(255, 255, 255, 0.95);
+  background: linear-gradient(135deg, #f8fdf2 0%, #f0fdf9 50%, #f0fbfd 100%);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid #f3f4f6;
   z-index: 50;

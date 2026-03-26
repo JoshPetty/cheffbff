@@ -14,7 +14,7 @@ export default async function HomePage() {
     .limit(6);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <Navigation />
       <Hero />
       <FeaturedRecipes recipes={recipes || []} />

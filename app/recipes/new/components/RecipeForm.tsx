@@ -11,6 +11,7 @@ import {
   type IngredientField,
   emptyIngredient,
   formatIngredient,
+  parseIngredient,
 } from "@/app/recipes/ingredientUtils";
 
 export function RecipeForm() {
@@ -29,6 +30,13 @@ export function RecipeForm() {
   const [error, setError] = useState("");
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+
+  // ── URL import state ──────────────────────────────────────────────────────
+  const [importUrl, setImportUrl] = useState("");
+  const [importing, setImporting] = useState(false);
+  const [importError, setImportError] = useState("");
+  const [importSuccess, setImportSuccess] = useState(false);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -42,6 +50,42 @@ export function RecipeForm() {
       }
     });
   }, [router]);
+
+  async function handleImport() {
+    if (!importUrl.trim()) return;
+    setImporting(true);
+    setImportError("");
+    setImportSuccess(false);
+    try {
+      const res = await fetch("/api/import-recipe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: importUrl.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setImportError(data.error ?? "Import failed");
+        return;
+      }
+      // Pre-fill form fields
+      if (data.title) setTitle(data.title);
+      if (data.description) setDescription(data.description);
+      if (data.category) setCategory(data.category);
+      if (data.cook_time != null) setCookTime(String(data.cook_time));
+      if (data.prep_time != null) setPrepTime(String(data.prep_time));
+      if (Array.isArray(data.ingredients) && data.ingredients.length > 0) {
+        setIngredients(data.ingredients.map((s: string) => parseIngredient(String(s))));
+      }
+      if (Array.isArray(data.instructions) && data.instructions.length > 0) {
+        setInstructions(data.instructions.map(String));
+      }
+      setImportSuccess(true);
+    } catch {
+      setImportError("Something went wrong. Please try again.");
+    } finally {
+      setImporting(false);
+    }
+  }
 
   function addIngredient() {
     setIngredients([...ingredients, emptyIngredient()]);
@@ -142,6 +186,68 @@ export function RecipeForm() {
           Posting as <span className="font-medium text-orange-500">{userEmail}</span>
         </p>
       )}
+
+      {/* ── Import from URL ─────────────────────────────────────────────── */}
+      <div style={{
+        background: "linear-gradient(135deg, rgba(134,197,64,0.07), rgba(93,194,209,0.07))",
+        border: "1.5px solid rgba(134,197,64,0.25)",
+        borderRadius: 12, padding: "1.125rem 1.25rem", marginBottom: "1.75rem",
+      }}>
+        <p style={{ fontSize: 13, fontWeight: 700, color: "#374151", margin: "0 0 0.625rem", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+          🔗 Import recipe from a URL
+        </p>
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <input
+            type="url"
+            value={importUrl}
+            onChange={e => { setImportUrl(e.target.value); setImportError(""); setImportSuccess(false); }}
+            placeholder="https://www.example.com/my-recipe"
+            disabled={importing}
+            style={{
+              flex: 1, padding: "0.5rem 0.75rem",
+              border: "1.5px solid #e5e7eb", borderRadius: 8,
+              fontSize: 13, outline: "none", fontFamily: "inherit",
+              background: importing ? "#f9fafb" : "#fff",
+            }}
+            onFocus={e => (e.currentTarget.style.borderColor = "#86C540")}
+            onBlur={e => (e.currentTarget.style.borderColor = "#e5e7eb")}
+            onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); handleImport(); } }}
+          />
+          <button
+            type="button"
+            onClick={handleImport}
+            disabled={importing || !importUrl.trim()}
+            style={{
+              padding: "0.5rem 1.125rem",
+              background: importing || !importUrl.trim()
+                ? "#e5e7eb"
+                : "linear-gradient(135deg, #86C540, #5DC2D1)",
+              color: importing || !importUrl.trim() ? "#9ca3af" : "#fff",
+              border: "none", borderRadius: 8,
+              fontSize: 13, fontWeight: 600, cursor: importing || !importUrl.trim() ? "not-allowed" : "pointer",
+              whiteSpace: "nowrap" as const, transition: "opacity 0.2s",
+            }}
+          >
+            {importing ? "Importing…" : "Import"}
+          </button>
+        </div>
+        {importing && (
+          <p style={{ fontSize: 12, color: "#6b7280", margin: "0.5rem 0 0", display: "flex", alignItems: "center", gap: "0.375rem" }}>
+            <span style={{ display: "inline-block", animation: "spin 1s linear infinite" }}>⏳</span>
+            Fetching and extracting recipe…
+          </p>
+        )}
+        {importSuccess && !importError && (
+          <p style={{ fontSize: 12, color: "#4a8f15", fontWeight: 600, margin: "0.5rem 0 0" }}>
+            ✓ Recipe imported! Review and edit the fields below before publishing.
+          </p>
+        )}
+        {importError && (
+          <p style={{ fontSize: 12, color: "#dc2626", margin: "0.5rem 0 0" }}>
+            ⚠ {importError}
+          </p>
+        )}
+      </div>
 
       <form onSubmit={handleSubmit} className="recipe-form">
         {/* Title */}

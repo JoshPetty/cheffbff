@@ -5,6 +5,8 @@ import styled from "styled-components";
 export const Container = styled.footer`
   border-top: 1px solid #f3f4f6;
   padding: 3rem 0;
+  background: linear-gradient(135deg, #f8fdf2 0%, #f0fdf9 50%, #f0fbfd 100%);
+
 
   .footer-content {
     display: flex;

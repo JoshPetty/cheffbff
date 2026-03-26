@@ -95,11 +95,20 @@ export function Navigation() {
             </Link>
             {user && (
               <Link
+                href="/dashboard/library"
+                onClick={closeMenu}
+                className={isActive('/dashboard/library') ? 'active' : ''}
+              >
+                Library
+              </Link>
+            )}
+            {user && (
+              <Link
                 href="/collections"
                 onClick={closeMenu}
                 className={isActive('/collections') ? 'active' : ''}
               >
-                My Collections
+                Menus
               </Link>
             )}
             <Link
@@ -178,6 +187,7 @@ export function Navigation() {
             <Link href="/" onClick={closeMenu}>Home</Link>
             <Link href="/recipes" onClick={closeMenu}>Recipes</Link>
             <Link href="/recipe-helper" onClick={closeMenu}>Recipe Helper</Link>
+            {user && <Link href="/dashboard/library" onClick={closeMenu}>Library</Link>}
             {user && <Link href="/collections" onClick={closeMenu}>My Collections</Link>}
             <Link href="/recipes/new" onClick={closeMenu} className="button">Add Recipe</Link>
             {user ? (

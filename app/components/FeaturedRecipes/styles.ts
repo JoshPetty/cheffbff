@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 export const Container = styled.section`
   padding: 6rem 2rem;
-  background: #ffffff;
+  background: linear-gradient(135deg, #f8fdf2 0%, #f0fdf9 50%, #f0fbfd 100%);
 
   .featured-header {
     max-width: 80rem;

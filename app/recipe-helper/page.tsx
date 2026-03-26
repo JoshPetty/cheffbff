@@ -4,7 +4,7 @@ import { RecipeHelperForm } from "./components/RecipeHelperForm";
 
 export default function RecipeHelperPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <Navigation />
       
       <main style={{ paddingTop: '5rem', paddingBottom: '4rem' }}>

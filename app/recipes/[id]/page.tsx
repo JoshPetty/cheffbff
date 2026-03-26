@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { Navigation } from "@/app/components/Navigation/Navigation";
 import { Footer } from "@/app/components/Footer/Footer";
 import { RecipeDetail } from "./components/RecipeDetail";
-import { EditButton } from "./components/EditButton";
+import { RecipeOwnerActions } from "./components/RecipeOwnerActions";
 import { CommentsSection } from "./components/CommentsSection";
 import type { Comment } from "./components/CommentsSection";
 import Link from "next/link";
@@ -64,7 +64,7 @@ export default async function RecipeDetailPage({
   }));
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <Navigation />
 
       <main style={{ paddingTop: "5rem", paddingBottom: "4rem" }}>
@@ -81,8 +81,11 @@ export default async function RecipeDetailPage({
               ← Back to Recipes
             </Link>
 
-            {/* Only renders if the logged-in user is the owner */}
-            <EditButton recipeId={recipe.id} recipeUserId={recipe.user_id} />
+            <RecipeOwnerActions
+              recipeId={recipe.id}
+              recipeUserId={recipe.user_id}
+              initialIsPublic={recipe.is_public ?? true}
+            />
           </div>
 
           <RecipeDetail

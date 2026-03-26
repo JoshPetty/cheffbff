@@ -57,7 +57,7 @@ export default async function CollectionDetailPage({
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <Navigation />
       <main style={{ paddingTop: "5rem", paddingBottom: "4rem" }}>
         <div style={{ maxWidth: "80rem", margin: "0 auto", padding: "2rem" }}>
