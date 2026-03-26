@@ -1,10 +1,19 @@
 "use client";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 
-export default function LoginPage() {
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <div style={styles.label}>{label}</div>
+      {children}
+    </div>
+  );
+}
+
+function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,46 +33,45 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={styles.bg}>
-      <div style={styles.card}>
-        <Link href="/" style={styles.logoRow}>
-          <div style={styles.logoBox}>🍳</div>
-          <span style={styles.brand}>ChefBFF</span>
-        </Link>
+    <div style={styles.card}>
+      <Link href="/" style={styles.logoRow}>
+        <div style={styles.logoBox}>🍳</div>
+        <span style={styles.brand}>ChefBFF</span>
+      </Link>
 
-        <h1 style={styles.heading}>Welcome back</h1>
-        <p style={styles.sub}>
-          No account?{" "}
-          <Link href="/auth/signup" style={styles.link}>Sign up free</Link>
-        </p>
+      <h1 style={styles.heading}>Welcome back</h1>
+      <p style={styles.sub}>
+        No account?{" "}
+        <Link href="/auth/signup" style={styles.link}>Sign up free</Link>
+      </p>
 
-        {error && <div style={styles.error}>{error}</div>}
+      {error && <div style={styles.error}>{error}</div>}
 
-        <form onSubmit={handleSubmit}>
-          <Field label="Email">
-            <input style={styles.input} type="email" required autoComplete="email"
-              placeholder="you@example.com" value={email}
-              onChange={e => setEmail(e.target.value)} />
-          </Field>
-          <Field label="Password">
-            <input style={styles.input} type="password" required autoComplete="current-password"
-              placeholder="••••••••" value={password}
-              onChange={e => setPassword(e.target.value)} />
-          </Field>
-          <button type="submit" disabled={loading} style={styles.btn}>
-            {loading ? "Signing in…" : "Sign in →"}
-          </button>
-        </form>
-      </div>
+      <form onSubmit={handleSubmit}>
+        <Field label="Email">
+          <input style={styles.input} type="email" required autoComplete="email"
+            placeholder="you@example.com" value={email}
+            onChange={e => setEmail(e.target.value)} />
+        </Field>
+        <Field label="Password">
+          <input style={styles.input} type="password" required autoComplete="current-password"
+            placeholder="••••••••" value={password}
+            onChange={e => setPassword(e.target.value)} />
+        </Field>
+        <button type="submit" disabled={loading} style={styles.btn}>
+          {loading ? "Signing in…" : "Sign in →"}
+        </button>
+      </form>
     </div>
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+export default function LoginPage() {
   return (
-    <div style={{ marginBottom: 16 }}>
-      <div style={styles.label}>{label}</div>
-      {children}
+    <div style={styles.bg}>
+      <Suspense fallback={<div style={styles.card}><p style={{ textAlign: "center", color: "#9ca3af" }}>Loading…</p></div>}>
+        <LoginForm />
+      </Suspense>
     </div>
   );
 }
