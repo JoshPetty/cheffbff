@@ -1,211 +1,237 @@
 # ChefBFF
 
-A full-stack recipe sharing and discovery platform that combines user-generated content with AI-powered recipe matching.
+A full-stack recipe sharing and social platform built with Next.js and Supabase. Users can create, discover, and save recipes, follow other cooks, and get AI-powered recipe suggestions from pantry ingredients.
 
-## Overview
-
-ChefBFF allows users to browse, share, and discover recipes through two powerful features:
-- **Recipe Library**: Browse and share user-submitted recipes with images
-- **AI Recipe Helper**: Get recipe recommendations based on available ingredients using machine learning
-
-## Tech Stack
-
-### Frontend
-- **Next.js 16** (App Router)
-- **React 19** with TypeScript
-- **Tailwind CSS 4** - Utility-first styling
-- **Styled Components 6** - Component-level styling
-- **Supabase** - Database and storage
-
-### Backend
-- **Supabase** (PostgreSQL) - User-generated recipes and image storage
-- **FastAPI** (Python) - ML-powered recipe matching service
-- **Pandas** - Data processing
-- **Scikit-learn** - TF-IDF and cosine similarity for recipe matching
+---
 
 ## Features
 
-### Recipe Library
-- Browse all user-submitted recipes
-- View detailed recipe information with ingredients and instructions
-- Upload and share your own recipes with images
-- Featured recipes on homepage
+**Recipe Management**
+- Create recipes with structured ingredients (amount, unit, name), step-by-step instructions, images, category, and cook/prep times
+- Edit, make private, or delete your recipes
+- Import recipes from any URL using Claude AI extraction
 
-### AI Recipe Helper
-- Enter available ingredients to find matching recipes
-- Mark required ingredients (must-have items)
-- Filter out recipes based on allergies
-- Get match percentage scores
-- See which ingredients you have vs need
-- Powered by 50,000+ recipe dataset
+**Discovery and Browse**
+- Browse all public recipes with full-text search, category filters, cook time filters, and sort options
+- Recipe cards show category, cook time, like count, comment count, and library saves
+
+**Social**
+- Follow other cooks and see their latest recipes in a dedicated feed
+- Like and comment on recipes
+- Public profile pages showing a cook's bio, stats, and recipe grid
+
+**Library and Collections**
+- Save recipes to a personal library with a bookmark toggle
+- Organise saved recipes into named collections (public or private)
+
+**Dashboard**
+- Persistent sidebar layout for Feed, Library, Cookbooks, Profile, and Discover
+- Mobile-responsive with a bottom tab bar
+
+**AI Features**
+- Pantry to Plate: enter available ingredients, get recipe matches ranked by score with allergen filtering
+- Import from URL: paste any recipe page URL and Claude extracts and pre-fills the create form
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript / React 19 |
+| Styling | Tailwind CSS 4, Styled Components 6 |
+| Database | Supabase (PostgreSQL + Storage) |
+| Auth | Supabase Auth |
+| AI (import) | Anthropic Claude API |
+| AI (matching) | FastAPI + Python (TF-IDF / cosine similarity) |
+
+---
 
 ## Project Structure
 
 ```
 chefbff/
-├── app/                          # Next.js App Router
-│   ├── components/               # Shared UI components
-│   │   ├── Navigation/          # Top navigation
-│   │   ├── Hero/                # Landing page hero
-│   │   ├── RecipeCard/          # Recipe card component
-│   │   ├── FeaturedRecipes/     # Featured recipes grid
-│   │   └── Footer/              # Footer component
-│   ├── recipes/                 # Recipe pages
-│   │   ├── page.tsx            # All recipes listing
-│   │   ├── [id]/               # Individual recipe page
-│   │   └── new/                # Create new recipe
-│   ├── recipe-helper/           # AI recipe matcher
+├── app/
+│   ├── api/
+│   │   └── import-recipe/       # Claude-powered URL import endpoint
+│   ├── auth/                    # Login and signup pages
+│   ├── collections/             # Collections list and detail pages
+│   ├── components/
+│   │   ├── Navigation/          # Top navigation bar
+│   │   ├── RecipeCard/          # Shared recipe card component
+│   │   ├── Hero/
+│   │   ├── FeaturedRecipes/
+│   │   └── Footer/
+│   ├── dashboard/               # Sidebar layout and dashboard pages
+│   │   ├── layout.tsx           # Persistent sidebar layout
+│   │   ├── DashboardSidebar.tsx
+│   │   ├── feed/                # Social feed from followed users
+│   │   ├── library/             # Saved recipes
+│   │   ├── collections/         # Cookbooks view
+│   │   └── profile/             # Profile summary and recipe grid
+│   ├── profile/                 # Profile edit page
+│   │   └── [username]/          # Public profile pages
+│   ├── recipe-helper/           # Pantry to Plate AI matcher
+│   ├── recipes/
+│   │   ├── page.tsx             # Browse with search and filters
+│   │   ├── new/                 # Create recipe form
+│   │   ├── [id]/                # Recipe detail, comments, like, save
+│   │   │   └── edit/            # Edit recipe form
+│   │   ├── IngredientRow.tsx    # Structured ingredient input component
+│   │   └── ingredientUtils.ts   # Parse and format ingredient strings
 │   └── page.tsx                 # Homepage
-├── python/                      # Python microservice
-│   ├── main.py                  # FastAPI application
-│   ├── matcher.py               # Recipe matching ML engine
-│   └── requirements.txt         # Python dependencies
-├── data/                        # Data storage
-│   └── recipes.csv              # 50k+ recipe dataset (2.3GB)
-├── lib/                         # Utility libraries
-│   └── supabase.ts             # Supabase client config
-└── public/                      # Static assets
+├── lib/
+│   ├── supabase.ts              # Browser Supabase client
+│   └── supabase-server.ts       # Server Supabase client (cookie-aware)
+├── python/
+│   ├── main.py                  # FastAPI service
+│   ├── matcher.py               # Recipe matching engine
+│   └── requirements.txt
+└── public/
 ```
+
+---
+
+## Database Schema
+
+```sql
+-- Core
+recipes        (id, user_id, title, description, ingredients[], instructions[],
+                image_url, category, cook_time, prep_time, is_public, created_at)
+profiles       (id, user_id, username, full_name, bio, avatar_url)
+
+-- Social
+likes          (id, user_id, recipe_id)
+comments       (id, user_id, recipe_id, content, created_at)
+follows        (follower_id, following_id)
+
+-- Saving
+library        (id, user_id, recipe_id, saved_at)
+collections    (id, user_id, name, description, is_public, cover_image_url)
+collection_recipes (id, collection_id, recipe_id, added_at)
+```
+
+---
 
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18+ and npm
-- Python 3.8+
-- Supabase account
+
+- Node.js 18+
+- Python 3.8+ (for the recipe matching service)
+- A Supabase project
 
 ### Installation
 
-1. Clone the repository
+**1. Clone and install dependencies**
+
 ```bash
 git clone <repository-url>
 cd chefbff
-```
-
-2. Install Node.js dependencies
-```bash
 npm install
 ```
 
-3. Set up Python environment
+**2. Set up environment variables**
+
+Create `.env.local` in the project root:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+ANTHROPIC_API_KEY=your_anthropic_api_key
+FASTAPI_URL=http://localhost:8000
+```
+
+**3. Set up the Python matching service (optional)**
+
 ```bash
 cd python
 python -m venv venv
-venv\Scripts\activate  # On Windows
-# source venv/bin/activate  # On macOS/Linux
+source venv/bin/activate   # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 cd ..
 ```
 
-4. Configure environment variables
+Place your `recipes.csv` dataset in the `data/` directory.
 
-Create a `.env.local` file in the root directory:
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
+### Running
 
-5. Set up Supabase
+**Next.js (required)**
 
-Create a `recipes` table in your Supabase project:
-```sql
-CREATE TABLE recipes (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  title TEXT NOT NULL,
-  description TEXT,
-  ingredients TEXT[] NOT NULL,
-  instructions TEXT[] NOT NULL,
-  image_url TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-```
-
-Create a storage bucket named `recipe-images` with public access.
-
-6. Add the recipe dataset
-
-Place your `recipes.csv` file in the `data/` directory. The CSV should contain columns for recipe titles, ingredients, and directions.
-
-### Running the Application
-
-1. Start the Next.js development server
 ```bash
 npm run dev
 ```
 
-2. In a separate terminal, start the Python FastAPI service
+**FastAPI matching service (optional)**
+
 ```bash
 cd python
-venv\Scripts\activate  # On Windows
-# source venv/bin/activate  # On macOS/Linux
+source venv/bin/activate
 uvicorn main:app --reload
 ```
 
-3. Access the application
 - Frontend: http://localhost:3000
 - FastAPI docs: http://localhost:8000/docs
 
-## Architecture
+---
 
-### Data Flow
+## API
 
+### Import Recipe — `POST /api/import-recipe`
+
+Fetches a webpage, strips HTML, and uses Claude to extract structured recipe data.
+
+```json
+Request:  { "url": "https://example.com/recipe" }
+
+Response: {
+  "title": "...",
+  "description": "...",
+  "ingredients": ["2 cups flour", "..."],
+  "instructions": ["Step 1...", "..."],
+  "prep_time": 15,
+  "cook_time": 30,
+  "category": "Dinner"
+}
 ```
-User Browser
-    ↓
-Next.js Frontend (Port 3000)
-    ├─→ Supabase API
-    │   ├─→ PostgreSQL Database (User recipes)
-    │   └─→ Storage Buckets (Recipe images)
-    │
-    └─→ Python FastAPI Service (Port 8000)
-        └─→ recipes.csv Dataset
-            └─→ ML Matching (TF-IDF + Cosine Similarity)
+
+### FastAPI Matching — `POST /match`
+
+```json
+Request: {
+  "ingredients": ["chicken", "garlic"],
+  "allergies": ["nuts"],
+  "required_ingredients": ["chicken"],
+  "top_n": 10
+}
+
+Response: [{ "title": "...", "score": 0.87, "missing": ["..."] }]
 ```
 
-### Recipe Matching Algorithm
-
-The AI Recipe Helper uses:
-- **TF-IDF Vectorization** - Transforms recipe ingredients into numerical vectors
-- **Cosine Similarity** - Calculates similarity between user ingredients and recipe ingredients
-- **Smart Filtering** - Excludes recipes with allergens and requires specified ingredients
-- **Match Scoring** - Provides percentage match and lists missing ingredients
-
-## API Endpoints
-
-### FastAPI Service (Port 8000)
-
-- `GET /` - Health check
-- `POST /match` - Match recipes based on ingredients
-  - Body: `{ ingredients: string[], allergies: string[], required_ingredients: string[], top_n: number }`
-  - Returns: Matched recipes with scores and ingredient analysis
-- `GET /health` - Service health and recipe count
+---
 
 ## Deployment
 
-### Frontend (Next.js)
-Deploy to Vercel, Netlify, or any Node.js hosting platform:
+**Frontend**
+
 ```bash
 npm run build
 npm start
 ```
 
-### Backend (FastAPI)
-Deploy to services like Railway, Render, or AWS:
+Deployable to Vercel or any Node.js host. Set all environment variables in the hosting dashboard.
+
+**FastAPI service**
+
 ```bash
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
-Update the frontend to point to your deployed FastAPI URL.
+Deployable to Railway, Render, or any container host. Update `FASTAPI_URL` in your frontend environment to point to the deployed service.
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+---
 
 ## License
 
-This project is open source and available under the MIT License.
-
-## Acknowledgments
-
-- Recipe dataset: 50,000+ recipes from public sources
-- Built with Next.js, React, FastAPI, and Supabase
+MIT
