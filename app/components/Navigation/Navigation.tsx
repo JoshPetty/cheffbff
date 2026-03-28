@@ -116,7 +116,7 @@ export function Navigation() {
               onClick={closeMenu}
               className="button"
             >
-              Add Recipe
+              New Recipe
             </Link>
           </nav>
 
@@ -186,10 +186,10 @@ export function Navigation() {
           <div className="mobile-menu">
             <Link href="/" onClick={closeMenu}>Home</Link>
             <Link href="/recipes" onClick={closeMenu}>Recipes</Link>
-            <Link href="/recipe-helper" onClick={closeMenu}>Recipe Helper</Link>
+            <Link href="/recipe-helper" onClick={closeMenu}>Pantry to Plate</Link>
             {user && <Link href="/dashboard/library" onClick={closeMenu}>Library</Link>}
-            {user && <Link href="/collections" onClick={closeMenu}>My Collections</Link>}
-            <Link href="/recipes/new" onClick={closeMenu} className="button">Add Recipe</Link>
+            {user && <Link href="/collections" onClick={closeMenu}>My Cookbooks</Link>}
+            <Link href="/recipes/new" onClick={closeMenu} className="button">New Recipe</Link>
             {user ? (
               <>
                 <Link

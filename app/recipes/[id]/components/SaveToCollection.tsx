@@ -140,7 +140,7 @@ export function SaveToCollection({ recipeId }: SaveToCollectionProps) {
       {/* Trigger button */}
       <button
         onClick={handleOpenClick}
-        title="Save to collection"
+        title="Save to cookbook"
         style={{
           display: "inline-flex", alignItems: "center", gap: "0.375rem",
           padding: "0.4rem 0.875rem",
@@ -178,7 +178,7 @@ export function SaveToCollection({ recipeId }: SaveToCollectionProps) {
         }}>
           <div style={{ padding: "0.75rem 1rem", borderBottom: "1px solid #f3f4f6" }}>
             <p style={{ fontSize: 12, fontWeight: 700, color: "#374151", margin: 0, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-              Save to collection
+              Save to cookbook
             </p>
           </div>
 
@@ -186,7 +186,7 @@ export function SaveToCollection({ recipeId }: SaveToCollectionProps) {
             <p style={{ padding: "1rem", fontSize: 13, color: "#9ca3af", margin: 0 }}>Loading…</p>
           ) : collections.length === 0 && !showNewForm ? (
             <p style={{ padding: "0.75rem 1rem", fontSize: 13, color: "#9ca3af", margin: 0 }}>
-              No collections yet.
+              No cookbooks yet.
             </p>
           ) : (
             <ul style={{ listStyle: "none", margin: 0, padding: "0.375rem 0", maxHeight: 220, overflowY: "auto" }}>
@@ -241,7 +241,7 @@ export function SaveToCollection({ recipeId }: SaveToCollectionProps) {
                   type="text"
                   value={newName}
                   onChange={e => setNewName(e.target.value)}
-                  placeholder="Collection name"
+                  placeholder="Cookbook name"
                   style={{
                     flex: 1, padding: "0.375rem 0.625rem",
                     border: "1.5px solid #e5e7eb", borderRadius: 6,
@@ -287,7 +287,7 @@ export function SaveToCollection({ recipeId }: SaveToCollectionProps) {
                 onMouseEnter={e => (e.currentTarget.style.background = "#f9fafb")}
                 onMouseLeave={e => (e.currentTarget.style.background = "none")}
               >
-                + New collection
+                + New cookbook
               </button>
             )}
           </div>

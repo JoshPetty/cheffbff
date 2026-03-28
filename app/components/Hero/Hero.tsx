@@ -13,7 +13,7 @@ export function Hero() {
         </p>
         <div className="cta-buttons">
           <Link href="/recipes" className="primary-button">
-            Browse Recipes
+            Discover
           </Link>
           <Link href="/recipes/new" className="secondary-button">
             Share Yours

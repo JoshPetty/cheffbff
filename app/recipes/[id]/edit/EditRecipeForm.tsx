@@ -23,6 +23,7 @@ interface Recipe {
   category: string | null;
   cook_time: number | null;
   prep_time: number | null;
+  servings: number | null;
 }
 
 export function EditRecipeForm({ recipe }: { recipe: Recipe }) {
@@ -31,6 +32,7 @@ export function EditRecipeForm({ recipe }: { recipe: Recipe }) {
   const [category, setCategory] = useState(recipe.category ?? "");
   const [cookTime, setCookTime] = useState(recipe.cook_time?.toString() ?? "");
   const [prepTime, setPrepTime] = useState(recipe.prep_time?.toString() ?? "");
+  const [servings, setServings] = useState(recipe.servings?.toString() ?? "");
   const [ingredients, setIngredients] = useState<IngredientField[]>(
     recipe.ingredients?.length
       ? recipe.ingredients.map(parseIngredient)
@@ -130,6 +132,7 @@ export function EditRecipeForm({ recipe }: { recipe: Recipe }) {
           category: category || null,
           cook_time: cookTime ? parseInt(cookTime, 10) : null,
           prep_time: prepTime ? parseInt(prepTime, 10) : null,
+          servings: servings ? parseInt(servings, 10) : null,
         })
         .eq("id", recipe.id)
         .eq("user_id", user.id); // extra safety check
@@ -174,8 +177,8 @@ export function EditRecipeForm({ recipe }: { recipe: Recipe }) {
           />
         </div>
 
-        {/* Category + Times row */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem" }} className="form-group">
+        {/* Category + Times + Servings row */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "1rem" }} className="form-group">
           <div>
             <label className="form-label">Category</label>
             <select
@@ -210,6 +213,17 @@ export function EditRecipeForm({ recipe }: { recipe: Recipe }) {
               onChange={e => setCookTime(e.target.value)}
               className="form-input"
               placeholder="e.g. 30"
+            />
+          </div>
+          <div>
+            <label className="form-label">Servings</label>
+            <input
+              type="number"
+              min={1}
+              value={servings}
+              onChange={e => setServings(e.target.value)}
+              className="form-input"
+              placeholder="e.g. 4"
             />
           </div>
         </div>

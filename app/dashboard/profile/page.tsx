@@ -148,7 +148,7 @@ export default async function DashboardProfilePage() {
               color: "#fff", fontWeight: 600, fontSize: 13, textDecoration: "none",
             }}
           >
-            Add your first recipe
+            Share your first recipe
           </Link>
         </div>
       ) : (

@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import { createClient as createServerClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+
+export const metadata: Metadata = { title: "Feed | ChefBFF" };
 
 // ── Time-ago helper ────────────────────────────────────────────────────────
 function timeAgo(dateStr: string): string {
@@ -106,7 +109,7 @@ export default async function FeedPage() {
       {/* Header */}
       <div style={{ marginBottom: "2rem" }}>
         <h1 style={{ fontSize: "1.625rem", fontWeight: 800, color: "#111827", margin: "0 0 0.25rem", letterSpacing: "-0.02em" }}>
-          Your Feed
+          Feed
         </h1>
         <p style={{ fontSize: "0.875rem", color: "#9ca3af", margin: 0 }}>
           {recipes.length === 0
@@ -255,7 +258,7 @@ function EmptyFollowing() {
   return (
     <div style={{ maxWidth: 600, margin: "0 auto", padding: "2rem 1rem 3rem" }}>
       <h1 style={{ fontSize: "1.625rem", fontWeight: 800, color: "#111827", margin: "0 0 2rem", letterSpacing: "-0.02em" }}>
-        Your Feed
+        Feed
       </h1>
       <div style={{
         textAlign: "center", padding: "4rem 2rem",

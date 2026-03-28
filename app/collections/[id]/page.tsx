@@ -62,7 +62,7 @@ export default async function CollectionDetailPage({
       <main style={{ paddingTop: "5rem", paddingBottom: "4rem" }}>
         <div style={{ maxWidth: "80rem", margin: "0 auto", padding: "2rem" }}>
           <Link href="/collections" style={{ fontSize: 14, fontWeight: 600, color: "#86C540", textDecoration: "none", display: "inline-block", marginBottom: "1.5rem" }}>
-            ← My Collections
+            ← My Cookbooks
           </Link>
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
             <h1 style={{ fontSize: "2rem", fontWeight: 700, color: "#111827", margin: 0 }}>
@@ -99,7 +99,7 @@ export default async function CollectionDetailPage({
                 background: "linear-gradient(135deg, #86C540, #5DC2D1)",
                 color: "#fff", fontWeight: 600, fontSize: 14, textDecoration: "none",
               }}>
-                Browse Recipes
+                Discover
               </Link>
             </div>
           ) : (

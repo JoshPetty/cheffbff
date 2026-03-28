@@ -5,6 +5,7 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Container } from "./styles";
 import { IngredientRow } from "@/app/recipes/IngredientRow";
 import {
@@ -14,12 +15,27 @@ import {
   parseIngredient,
 } from "@/app/recipes/ingredientUtils";
 
+interface ForkData {
+  originalId: string;
+  originalTitle: string;
+  originalAuthor: string | null;
+  title: string;
+  description: string | null;
+  ingredients: string[];
+  instructions: string[];
+  category: string | null;
+  cook_time: number | null;
+  prep_time: number | null;
+  servings: number | null;
+}
+
 export function RecipeForm() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [cookTime, setCookTime] = useState("");
   const [prepTime, setPrepTime] = useState("");
+  const [servings, setServings] = useState("");
   const [ingredients, setIngredients] = useState<IngredientField[]>([emptyIngredient()]);
   const [instructions, setInstructions] = useState<string[]>([""]);
   const [image, setImage] = useState<File | null>(null);
@@ -37,6 +53,9 @@ export function RecipeForm() {
   const [importError, setImportError] = useState("");
   const [importSuccess, setImportSuccess] = useState(false);
 
+  // ── Fork state ────────────────────────────────────────────────────────────
+  const [forkData, setForkData] = useState<ForkData | null>(null);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -49,6 +68,28 @@ export function RecipeForm() {
         setUserId(user.id);
       }
     });
+
+    // ── Detect fork data from sessionStorage ────────────────────────────────
+    const raw = sessionStorage.getItem("chefbff_fork");
+    if (raw) {
+      try {
+        const fork: ForkData = JSON.parse(raw);
+        sessionStorage.removeItem("chefbff_fork");
+        setForkData(fork);
+        setTitle(`My version of ${fork.title}`);
+        if (fork.description) setDescription(fork.description);
+        if (fork.category) setCategory(fork.category);
+        if (fork.cook_time != null) setCookTime(String(fork.cook_time));
+        if (fork.prep_time != null) setPrepTime(String(fork.prep_time));
+        if (fork.servings != null) setServings(String(fork.servings));
+        if (fork.ingredients.length > 0)
+          setIngredients(fork.ingredients.map((s) => parseIngredient(String(s))));
+        if (fork.instructions.length > 0)
+          setInstructions(fork.instructions.map(String));
+      } catch {
+        // malformed data — ignore
+      }
+    }
   }, [router]);
 
   async function handleImport() {
@@ -73,6 +114,7 @@ export function RecipeForm() {
       if (data.category) setCategory(data.category);
       if (data.cook_time != null) setCookTime(String(data.cook_time));
       if (data.prep_time != null) setPrepTime(String(data.prep_time));
+      if (data.servings != null) setServings(String(data.servings));
       if (Array.isArray(data.ingredients) && data.ingredients.length > 0) {
         setIngredients(data.ingredients.map((s: string) => parseIngredient(String(s))));
       }
@@ -168,9 +210,24 @@ export function RecipeForm() {
         category: category || null,
         cook_time: cookTime ? parseInt(cookTime, 10) : null,
         prep_time: prepTime ? parseInt(prepTime, 10) : null,
+        servings: servings ? parseInt(servings, 10) : null,
+        forked_from: forkData?.originalId ?? null,
       });
 
       if (insertError) throw insertError;
+
+      // Increment fork_count on the original recipe
+      if (forkData?.originalId) {
+        const { data: orig } = await supabase
+          .from("recipes")
+          .select("fork_count")
+          .eq("id", forkData.originalId)
+          .single();
+        await supabase
+          .from("recipes")
+          .update({ fork_count: (orig?.fork_count ?? 0) + 1 })
+          .eq("id", forkData.originalId);
+      }
 
       router.push("/recipes");
     } catch (err: any) {
@@ -185,6 +242,45 @@ export function RecipeForm() {
         <p className="text-sm text-gray-500 mb-6">
           Posting as <span className="font-medium text-orange-500">{userEmail}</span>
         </p>
+      )}
+
+      {/* ── Fork banner ─────────────────────────────────────────────────── */}
+      {forkData && (
+        <div style={{
+          display: "flex", alignItems: "center", gap: "0.5rem",
+          background: "rgba(134,197,64,0.08)",
+          border: "1.5px solid rgba(134,197,64,0.3)",
+          borderRadius: 10, padding: "0.75rem 1rem",
+          marginBottom: "1.25rem", flexWrap: "wrap",
+          fontSize: 14,
+        }}>
+          <span>🍴</span>
+          <span style={{ color: "#374151" }}>Forking</span>
+          <Link
+            href={`/recipes/${forkData.originalId}`}
+            style={{ fontWeight: 700, color: "#4a8f15", textDecoration: "none" }}
+            onMouseEnter={e => (e.currentTarget.style.textDecoration = "underline")}
+            onMouseLeave={e => (e.currentTarget.style.textDecoration = "none")}
+          >
+            {forkData.originalTitle}
+          </Link>
+          {forkData.originalAuthor && (
+            <>
+              <span style={{ color: "#6b7280" }}>by</span>
+              <Link
+                href={`/profile/${forkData.originalAuthor}`}
+                style={{ fontWeight: 600, color: "#4a8f15", textDecoration: "none" }}
+                onMouseEnter={e => (e.currentTarget.style.textDecoration = "underline")}
+                onMouseLeave={e => (e.currentTarget.style.textDecoration = "none")}
+              >
+                {forkData.originalAuthor}
+              </Link>
+            </>
+          )}
+          <span style={{ color: "#6b7280", marginLeft: "auto", fontSize: 12 }}>
+            Edit freely — your version will be saved separately
+          </span>
+        </div>
       )}
 
       {/* ── Import from URL ─────────────────────────────────────────────── */}
@@ -275,8 +371,8 @@ export function RecipeForm() {
           />
         </div>
 
-        {/* Category + Times row */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem" }} className="form-group">
+        {/* Category + Times + Servings row */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "1rem" }} className="form-group">
           <div>
             <label className="form-label">Category</label>
             <select
@@ -311,6 +407,17 @@ export function RecipeForm() {
               onChange={e => setCookTime(e.target.value)}
               className="form-input"
               placeholder="e.g. 30"
+            />
+          </div>
+          <div>
+            <label className="form-label">Servings</label>
+            <input
+              type="number"
+              min={1}
+              value={servings}
+              onChange={e => setServings(e.target.value)}
+              className="form-input"
+              placeholder="e.g. 4"
             />
           </div>
         </div>
@@ -457,7 +564,7 @@ export function RecipeForm() {
           disabled={loading || uploading}
           className="submit-button"
         >
-          {uploading ? "Uploading image…" : loading ? "Creating Recipe…" : "Create Recipe"}
+          {uploading ? "Uploading image…" : loading ? "Creating…" : "New Recipe"}
         </button>
       </form>
     </Container>

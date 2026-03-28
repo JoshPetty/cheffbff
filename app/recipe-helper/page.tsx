@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import { Navigation } from "@/app/components/Navigation/Navigation";
 import { Footer } from "@/app/components/Footer/Footer";
 import { RecipeHelperForm } from "./components/RecipeHelperForm";
+
+export const metadata: Metadata = { title: "Pantry to Plate | ChefBFF" };
 
 export default function RecipeHelperPage() {
   return (

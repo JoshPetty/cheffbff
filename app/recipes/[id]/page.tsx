@@ -6,6 +6,7 @@ import { RecipeDetail } from "./components/RecipeDetail";
 import { RecipeOwnerActions } from "./components/RecipeOwnerActions";
 import { CommentsSection } from "./components/CommentsSection";
 import type { Comment } from "./components/CommentsSection";
+import { ChefNotes } from "./components/ChefNotes";
 import Link from "next/link";
 
 export default async function RecipeDetailPage({
@@ -24,26 +25,54 @@ export default async function RecipeDetailPage({
 
   if (!recipe) notFound();
 
-  // Fetch author profile separately (no FK between recipes and profiles)
-  const { data: author } = await supabase
-    .from("profiles")
-    .select("username, avatar_url")
-    .eq("user_id", recipe.user_id)
-    .maybeSingle();
+  // Parallel fetches: author profile, like count, comments, forked-from info
+  const [
+    { data: author },
+    { count: likeCount },
+    { data: commentsRaw },
+    forkedFromResult,
+  ] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("username, avatar_url")
+      .eq("user_id", recipe.user_id)
+      .maybeSingle(),
+    supabase
+      .from("likes")
+      .select("*", { count: "exact", head: true })
+      .eq("recipe_id", id),
+    supabase
+      .from("comments")
+      .select("id, content, created_at, user_id")
+      .eq("recipe_id", id)
+      .order("created_at", { ascending: false }),
+    // Fetch original recipe + its author if this is a fork
+    recipe.forked_from
+      ? supabase
+          .from("recipes")
+          .select("id, title, user_id")
+          .eq("id", recipe.forked_from)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+  ]);
 
-  // Like count
-  const { count: likeCount } = await supabase
-    .from("likes")
-    .select("*", { count: "exact", head: true })
-    .eq("recipe_id", id);
+  // Resolve forked-from author username
+  let forkedFromInfo: { id: string; title: string; authorUsername: string | null } | null = null;
+  if (forkedFromResult.data) {
+    const orig = forkedFromResult.data;
+    const { data: origAuthor } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("user_id", orig.user_id)
+      .maybeSingle();
+    forkedFromInfo = {
+      id: orig.id,
+      title: orig.title,
+      authorUsername: origAuthor?.username ?? null,
+    };
+  }
 
   // Comments + author profiles
-  const { data: commentsRaw } = await supabase
-    .from("comments")
-    .select("id, content, created_at, user_id")
-    .eq("recipe_id", id)
-    .order("created_at", { ascending: false });
-
   const commentUserIds = [
     ...new Set((commentsRaw ?? []).map((c) => c.user_id).filter(Boolean)),
   ];
@@ -69,7 +98,7 @@ export default async function RecipeDetailPage({
 
       <main style={{ paddingTop: "5rem", paddingBottom: "4rem" }}>
         <div style={{ maxWidth: "80rem", margin: "0 auto", padding: "2rem" }}>
-          {/* Back + Edit row */}
+          {/* Back + Owner actions row */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "2rem" }}>
             <Link
               href="/recipes"
@@ -92,6 +121,15 @@ export default async function RecipeDetailPage({
             recipe={recipe}
             author={author ?? null}
             likeCount={likeCount ?? 0}
+            forkedFromInfo={forkedFromInfo}
+          />
+          <ChefNotes
+            recipe={{
+              title: recipe.title,
+              description: recipe.description ?? null,
+              ingredients: recipe.ingredients ?? null,
+              instructions: recipe.instructions ?? null,
+            }}
           />
           <CommentsSection recipeId={recipe.id} initialComments={comments} />
         </div>

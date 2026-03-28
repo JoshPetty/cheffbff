@@ -1,4 +1,8 @@
+import type { Metadata } from "next";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase";
+
+export const metadata: Metadata = { title: "Discover | ChefBFF" };
 import { Navigation } from "@/app/components/Navigation/Navigation";
 import { Footer } from "@/app/components/Footer/Footer";
 import { RecipesGrid } from "./components/RecipesGrid";
@@ -118,7 +122,7 @@ export default async function RecipesPage({
       <main style={{ paddingTop: "5rem" }}>
         <div style={{ maxWidth: "80rem", margin: "0 auto", padding: "3rem 2rem" }}>
           <h1 style={{ fontSize: "3rem", fontWeight: 700, color: "#111827", marginBottom: "1.5rem" }}>
-            All Recipes
+            Discover
           </h1>
           <RecipeFilters
             initialQ={q}

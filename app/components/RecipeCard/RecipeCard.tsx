@@ -18,6 +18,8 @@ interface Recipe {
   likesCount?: number;
   commentsCount?: number;
   savesCount?: number;
+  fork_count?: number;
+  forked_from?: string | null;
   category?: string | null;
   cook_time?: number | null;
   prep_time?: number | null;
@@ -34,7 +36,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
   return (
     <Container>
       <Link href={`/recipes/${recipe.id}`} className="recipe-link">
-        <div className="image-container">
+        <div className="image-container" style={{ position: "relative" }}>
           {recipe.image_url ? (
             <img
               src={recipe.image_url}
@@ -44,6 +46,18 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
           ) : (
             <div className="placeholder-image">
               <span className="emoji">🍳</span>
+            </div>
+          )}
+          {recipe.forked_from && (
+            <div style={{
+              position: "absolute", bottom: 7, left: 8,
+              background: "rgba(0,0,0,0.58)", color: "#fff",
+              borderRadius: 5, padding: "2px 7px",
+              fontSize: 11, fontWeight: 700,
+              backdropFilter: "blur(3px)",
+              pointerEvents: "none",
+            }}>
+              🍴 Remix
             </div>
           )}
         </div>
@@ -79,6 +93,9 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
             )}
             {recipe.savesCount !== undefined && recipe.savesCount > 0 && (
               <span className="stat-item">🔖 {recipe.savesCount}</span>
+            )}
+            {recipe.fork_count !== undefined && recipe.fork_count > 0 && (
+              <span className="stat-item">🍴 {recipe.fork_count}</span>
             )}
           </div>
         </div>

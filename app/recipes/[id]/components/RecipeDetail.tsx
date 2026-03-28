@@ -5,7 +5,8 @@ import { Container } from "./styles";
 import { LikeButton } from "./LikeButton";
 import { LibraryButton } from "./LibraryButton";
 import { SaveToCollection } from "./SaveToCollection";
-import { parseIngredient } from "@/app/recipes/ingredientUtils";
+import { ServingsScaler } from "./ServingsScaler";
+import { ForkButton } from "./ForkButton";
 
 interface Recipe {
   id: string;
@@ -14,6 +15,13 @@ interface Recipe {
   image_url: string | null;
   ingredients: string[] | null;
   instructions: string[] | null;
+  servings: number | null;
+  user_id: string;
+  forked_from: string | null;
+  fork_count: number;
+  category: string | null;
+  cook_time: number | null;
+  prep_time: number | null;
 }
 
 interface Author {
@@ -21,13 +29,20 @@ interface Author {
   avatar_url: string | null;
 }
 
+interface ForkedFromInfo {
+  id: string;
+  title: string;
+  authorUsername: string | null;
+}
+
 interface RecipeDetailProps {
   recipe: Recipe;
   author: Author | null;
   likeCount: number;
+  forkedFromInfo?: ForkedFromInfo | null;
 }
 
-export function RecipeDetail({ recipe, author, likeCount }: RecipeDetailProps) {
+export function RecipeDetail({ recipe, author, likeCount, forkedFromInfo }: RecipeDetailProps) {
   const authorName = author?.username ?? "Anonymous";
   const authorInitial = authorName.charAt(0).toUpperCase();
 
@@ -52,6 +67,39 @@ export function RecipeDetail({ recipe, author, likeCount }: RecipeDetailProps) {
         {/* Content */}
         <div className="content-section">
           <h1 className="recipe-title">{recipe.title}</h1>
+
+          {/* Forked-from attribution */}
+          {forkedFromInfo && (
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: "0.35rem",
+              fontSize: "0.8125rem", color: "#6b7280",
+              marginBottom: "0.875rem",
+            }}>
+              <span>🍴</span>
+              <span>Forked from</span>
+              <Link
+                href={`/recipes/${forkedFromInfo.id}`}
+                style={{ color: "#86C540", fontWeight: 600, textDecoration: "none" }}
+                onMouseEnter={e => (e.currentTarget.style.textDecoration = "underline")}
+                onMouseLeave={e => (e.currentTarget.style.textDecoration = "none")}
+              >
+                {forkedFromInfo.title}
+              </Link>
+              {forkedFromInfo.authorUsername && (
+                <>
+                  <span>by</span>
+                  <Link
+                    href={`/profile/${forkedFromInfo.authorUsername}`}
+                    style={{ color: "#86C540", fontWeight: 600, textDecoration: "none" }}
+                    onMouseEnter={e => (e.currentTarget.style.textDecoration = "underline")}
+                    onMouseLeave={e => (e.currentTarget.style.textDecoration = "none")}
+                  >
+                    {forkedFromInfo.authorUsername}
+                  </Link>
+                </>
+              )}
+            </div>
+          )}
 
           {/* Author row */}
           <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", marginBottom: "1rem" }}>
@@ -78,8 +126,8 @@ export function RecipeDetail({ recipe, author, likeCount }: RecipeDetailProps) {
                 <Link
                   href={`/profile/${author.username}`}
                   style={{ fontWeight: 600, color: "#86C540", textDecoration: "none" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
-                  onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
+                  onMouseEnter={e => (e.currentTarget.style.textDecoration = "underline")}
+                  onMouseLeave={e => (e.currentTarget.style.textDecoration = "none")}
                 >
                   {authorName}
                 </Link>
@@ -89,39 +137,49 @@ export function RecipeDetail({ recipe, author, likeCount }: RecipeDetailProps) {
             </span>
           </div>
 
-          {/* Like + Library + Collections row */}
+          {/* Actions row: Like · Library · Save · Fork · Fork count */}
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.5rem", flexWrap: "wrap" }}>
             <LikeButton recipeId={recipe.id} initialCount={likeCount} />
             <LibraryButton recipeId={recipe.id} />
             <SaveToCollection recipeId={recipe.id} />
+            <ForkButton
+              recipe={{
+                id: recipe.id,
+                user_id: recipe.user_id,
+                title: recipe.title,
+                description: recipe.description,
+                ingredients: recipe.ingredients,
+                instructions: recipe.instructions,
+                category: recipe.category,
+                cook_time: recipe.cook_time,
+                prep_time: recipe.prep_time,
+                servings: recipe.servings,
+              }}
+              originalAuthor={author?.username ?? null}
+            />
+            {recipe.fork_count > 0 && (
+              <span style={{
+                display: "inline-flex", alignItems: "center", gap: "0.25rem",
+                fontSize: 14, color: "#6b7280",
+              }}>
+                🍴 {recipe.fork_count} {recipe.fork_count === 1 ? "fork" : "forks"}
+              </span>
+            )}
           </div>
 
           {recipe.description && (
             <p className="recipe-description">{recipe.description}</p>
           )}
 
-          {/* Ingredients */}
+          {/* Ingredients + Servings Scaler */}
           <div className="section">
             <h2 className="section-title">Ingredients</h2>
-            <ul className="ingredients-list">
-              {recipe.ingredients?.map((ingredient, index) => {
-                const { amount, unit, name } = parseIngredient(ingredient);
-                const measure = [amount, unit].filter(Boolean).join(" ");
-                return (
-                  <li key={index} className="ingredient-item">
-                    <span className="bullet">•</span>
-                    <span>
-                      {measure && (
-                        <strong style={{ fontWeight: 700, marginRight: "0.35rem" }}>
-                          {measure}
-                        </strong>
-                      )}
-                      {name || ingredient}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
+            {recipe.ingredients && recipe.ingredients.length > 0 && (
+              <ServingsScaler
+                originalServings={recipe.servings ?? 4}
+                ingredients={recipe.ingredients}
+              />
+            )}
           </div>
 
           {/* Instructions */}

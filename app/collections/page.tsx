@@ -104,10 +104,10 @@ export default function CollectionsPage() {
           {/* Header */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "2rem" }}>
             <div>
-              <h1 style={{ fontSize: "1.875rem", fontWeight: 700, color: "#111827", margin: 0 }}>My Collections</h1>
+              <h1 style={{ fontSize: "1.875rem", fontWeight: 700, color: "#111827", margin: 0 }}>My Cookbooks</h1>
               {!loading && (
                 <p style={{ fontSize: "0.9375rem", color: "#6b7280", marginTop: "0.25rem" }}>
-                  {collections.length} {collections.length === 1 ? "collection" : "collections"}
+                  {collections.length} {collections.length === 1 ? "cookbook" : "cookbooks"}
                 </p>
               )}
             </div>
@@ -122,7 +122,7 @@ export default function CollectionsPage() {
               onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
               onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
             >
-              + New Collection
+              + New Cookbook
             </button>
           </div>
 
@@ -131,8 +131,8 @@ export default function CollectionsPage() {
           ) : collections.length === 0 ? (
             <div style={{ textAlign: "center", padding: "5rem 1rem" }}>
               <div style={{ fontSize: "3.5rem", marginBottom: "1rem" }}>📚</div>
-              <p style={{ color: "#374151", fontSize: "1.125rem", fontWeight: 600 }}>No collections yet</p>
-              <p style={{ color: "#9ca3af", marginTop: "0.375rem" }}>Save your favourite recipes into themed collections.</p>
+              <p style={{ color: "#374151", fontSize: "1.125rem", fontWeight: 600 }}>No cookbooks yet</p>
+              <p style={{ color: "#9ca3af", marginTop: "0.375rem" }}>Save your favourite recipes into themed cookbooks.</p>
               <button
                 onClick={openModal}
                 style={{
@@ -141,7 +141,7 @@ export default function CollectionsPage() {
                   color: "#fff", fontWeight: 600, fontSize: 14, cursor: "pointer",
                 }}
               >
-                Create your first collection
+                Create your first cookbook
               </button>
             </div>
           ) : (
@@ -170,7 +170,7 @@ export default function CollectionsPage() {
             boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
           }}>
             <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#111827", marginBottom: "1.5rem" }}>
-              New Collection
+              New Cookbook
             </h2>
             <form onSubmit={handleCreate}>
               <div style={{ marginBottom: "1rem" }}>

@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import { createClient as createServerClient } from "@/lib/supabase-server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+
+export const metadata: Metadata = { title: "My Library | ChefBFF" };
 import { RecipeCard } from "@/app/components/RecipeCard/RecipeCard";
 
 export default async function LibraryPage() {
@@ -128,7 +131,7 @@ export default async function LibraryPage() {
               textDecoration: "none",
             }}
           >
-            Browse Recipes
+            Discover
           </Link>
         </div>
       ) : (

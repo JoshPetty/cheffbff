@@ -202,7 +202,7 @@ export default function ProfilePage() {
 
           {/* Page title */}
           <h1 style={{ fontSize: "1.75rem", fontWeight: 700, color: "#111827", marginBottom: 8 }}>
-            Edit Profile
+            My Profile
           </h1>
           <p style={{ fontSize: 14, color: "#9ca3af", marginBottom: 32 }}>
             Member since {joinedAt} · {user.email}
@@ -351,7 +351,7 @@ export default function ProfilePage() {
               }}>
                 <div style={{ fontSize: 40, marginBottom: 12 }}>🍳</div>
                 <p style={{ color: "#6b7280", marginBottom: 16 }}>You haven&apos;t shared any recipes yet.</p>
-                <Link href="/recipes/new" style={s.btnPrimary}>Add your first recipe</Link>
+                <Link href="/recipes/new" style={s.btnPrimary}>Share your first recipe</Link>
               </div>
             ) : (
               <div style={{

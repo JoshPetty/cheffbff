@@ -12,6 +12,8 @@ interface Recipe {
   description: string | null;
   image_url: string | null;
   ingredients: string[] | null;
+  forked_from: string | null;
+  fork_count: number;
 }
 
 export default async function PublicProfilePage({
@@ -32,7 +34,7 @@ export default async function PublicProfilePage({
 
   const { data: recipes } = await supabase
     .from("recipes")
-    .select("id, title, description, image_url, ingredients")
+    .select("id, title, description, image_url, ingredients, forked_from, fork_count")
     .eq("user_id", profile.user_id)
     .order("created_at", { ascending: false });
 
