@@ -26,7 +26,7 @@ export default async function RecipesPage({
   let query = supabase
     .from("recipes")
     .select(
-      "id, title, description, image_url, ingredients, user_id, created_at, category, cook_time, prep_time"
+  "id, title, description, image_url, ingredients, user_id, created_at, category, cook_time, prep_time, difficulty, fork_count, forked_from"
     )
     .eq("is_public", true);
 

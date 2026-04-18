@@ -33,8 +33,13 @@ export async function POST(req: NextRequest) {
  const res = await fetch(`${SPOONACULAR_BASE}/recipes/findByIngredients?${params}`);
 
   if (!res.ok) {
-    return NextResponse.json({ error: "Recipe service unavailable" }, { status: 503 });
-  }
+  const errorText = await res.text();
+  console.error("Spoonacular error:", res.status, errorText);
+  return NextResponse.json(
+    { error: `Spoonacular error: ${res.status} - ${errorText}` },
+    { status: 503 }
+  );
+}
 
   const matches = await res.json();
 
