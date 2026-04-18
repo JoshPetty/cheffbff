@@ -8,6 +8,7 @@ interface Author {
   avatar_url: string | null;
 }
 
+
 interface Recipe {
   id: string;
   title: string;
@@ -23,6 +24,8 @@ interface Recipe {
   category?: string | null;
   cook_time?: number | null;
   prep_time?: number | null;
+  difficulty?: string | null; 
+
 }
 
 interface RecipeCardProps {
@@ -64,16 +67,37 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
 
         <div className="recipe-content">
           {/* Category + cook time row */}
-          {(recipe.category || recipe.cook_time) && (
-            <div className="recipe-meta-row">
-              {recipe.category && (
-                <span className="category-badge">{recipe.category}</span>
-              )}
-              {recipe.cook_time && (
-                <span className="cook-time">🕐 {recipe.cook_time} min</span>
-              )}
-            </div>
-          )}
+          {/* Category + cook time row */}
+{(recipe.category || recipe.cook_time || recipe.difficulty) && (
+  <div className="recipe-meta-row">
+    {recipe.category && (
+      <span className="category-badge">{recipe.category}</span>
+    )}
+    {recipe.difficulty && recipe.difficulty !== "Unknown" && (
+      <span style={{
+        fontSize: "0.6875rem",
+        fontWeight: 700,
+        padding: "2px 8px",
+        borderRadius: 20,
+        background:
+          recipe.difficulty === "Easy" ? "rgba(134,197,64,0.15)" :
+          recipe.difficulty === "Medium" ? "rgba(251,191,36,0.15)" :
+          "rgba(239,68,68,0.15)",
+        color:
+          recipe.difficulty === "Easy" ? "#4a8f15" :
+          recipe.difficulty === "Medium" ? "#92400e" :
+          "#dc2626",
+        letterSpacing: "0.02em",
+        textTransform: "uppercase" as const,
+      }}>
+        {recipe.difficulty}
+      </span>
+    )}
+    {recipe.cook_time && (
+      <span className="cook-time">🕐 {recipe.cook_time} min</span>
+    )}
+  </div>
+)}
 
           <h3 className="recipe-title">{recipe.title}</h3>
 

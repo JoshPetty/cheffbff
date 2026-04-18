@@ -1,7 +1,6 @@
 "use client";
 
-// Migration: ALTER TABLE recipes ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id);
-
+import { scoreDifficulty } from "@/lib/difficulty-classifier";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
@@ -200,7 +199,13 @@ export function RecipeForm() {
         .filter((s) => s.trim() !== "");
       const cleanInstructions = instructions.filter((i) => i.trim() !== "");
 
-      const { error: insertError } = await supabase.from("recipes").insert({
+      // HERE IS WHERE I PUT THE DIFFICULTY CLASSIFIER:
+      const difficultyResult = scoreDifficulty(cleanInstructions);
+
+      
+
+
+      const { error: recipeInsertError } = await supabase.from("recipes").insert({
         title,
         description,
         ingredients: cleanIngredients,
@@ -212,9 +217,11 @@ export function RecipeForm() {
         prep_time: prepTime ? parseInt(prepTime, 10) : null,
         servings: servings ? parseInt(servings, 10) : null,
         forked_from: forkData?.originalId ?? null,
+        difficulty: difficultyResult.difficulty,  // ← add this line
+
       });
 
-      if (insertError) throw insertError;
+  if (recipeInsertError) throw recipeInsertError;
 
       // Increment fork_count on the original recipe
       if (forkData?.originalId) {

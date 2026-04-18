@@ -1,55 +1,87 @@
 /**
- * app/api/match/route.ts — FastAPI Proxy
+ * app/api/match/route.ts — Pantry to Plate Recipe Matcher
  *
- * Forwards /api/match requests to the FastAPI backend.
- * This means the frontend never hardcodes localhost:8000 —
- * in production, set FASTAPI_URL to your deployed Python service URL.
+ * Calls Spoonacular API to find recipes matching user's ingredients.
  */
-import { NextRequest, NextResponse } from "next/server";
 
-const FASTAPI_URL = process.env.FASTAPI_URL || "http://localhost:8000";
+// This allows me to type the request and response objects for better type safety
+import {NextRequest, NextResponse} from "next/server"; 
 
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
 
-    const response = await fetch(`${FASTAPI_URL}/match`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+const SPOONACULAR_BASE = "https://api.spoonacular.com";
+const API_KEY = process.env.SPOONACULAR_API_KEY ?? "";
+
+export async function POST(req: NextRequest) {
+  const { ingredients, allergies, top_n = 10 } = await req.json();
+
+  if (!ingredients || ingredients.length === 0) {
+    return NextResponse.json({ error: "No ingredients provided" }, { status: 400 });
+  }
+
+
+
+  // Find recipes by ingredients:
+  // This functionr returns recipes that can be made with the give ingredients, ranked 
+  const params = new URLSearchParams({
+      ingredients: ingredients.join(","),
+      number: String(top_n),
+      ranking: "1",
+      ignorePantry: "true",
+      apiKey: API_KEY,
     });
 
-    if (!response.ok) {
-      const error = await response.text();
-      return NextResponse.json(
-        { error: "FastAPI error", detail: error },
-        { status: response.status }
-      );
-    }
+ const res = await fetch(`${SPOONACULAR_BASE}/recipes/findByIngredients?${params}`);
 
-    const data = await response.json();
-    return NextResponse.json(data);
-  } catch (err: any) {
-    // FastAPI is probably not running
-    if (err.code === "ECONNREFUSED") {
-      return NextResponse.json(
-        { error: "Recipe matcher service is offline. Make sure the Python backend is running." },
-        { status: 503 }
-      );
-    }
-    return NextResponse.json(
-      { error: err.message || "Something went wrong" },
-      { status: 500 }
-    );
+  if (!res.ok) {
+    return NextResponse.json({ error: "Recipe service unavailable" }, { status: 503 });
   }
+
+  const matches = await res.json();
+
+  if (!Array.isArray(matches)) {
+    console.error("Spoonacular error:", matches);
+    return NextResponse.json({ error: "Could not fetch recipes. Check your API key." }, { status: 502 });
+  }
+
+  // Transform Spoonacular response into ChefBFF format
+  const recipes = matches
+    .filter((match: any) => {
+      // Filter out allergies if provided
+      if (!allergies || allergies.length === 0) return true;
+      const allIngredients = [
+        ...match.usedIngredients,
+        ...match.missedIngredients,
+      ].map((i: any) => i.name.toLowerCase());
+      return !allergies.some((allergy: string) =>
+        allIngredients.some((ing: string) => ing.includes(allergy.toLowerCase()))
+      );
+    })
+    .map((match: any) => {
+      const total = match.usedIngredientCount + match.missedIngredientCount;
+      const matchScore = Math.round((match.usedIngredientCount / total) * 100);
+
+      return {
+        title: match.title,
+        match_score: matchScore,
+        has_ingredients: match.usedIngredients.map((i: any) => i.name),
+        needs_ingredients: match.missedIngredients.map((i: any) => i.name),
+        total_ingredients: total,
+        image: match.image,
+        link: `https://spoonacular.com/recipes/${match.title.toLowerCase().replace(/\s+/g, "-")}-${match.id}`,
+        source: "Spoonacular",
+        directions: "View full recipe for directions",
+      };
+    });
+
+  return NextResponse.json({
+    success: true,
+    count: recipes.length,
+    recipes,
+  });
 }
 
 export async function GET() {
-  try {
-    const response = await fetch(`${FASTAPI_URL}/health`);
-    const data = await response.json();
-    return NextResponse.json(data);
-  } catch {
-    return NextResponse.json({ status: "offline" }, { status: 503 });
-  }
+  const res = await fetch(`${SPOONACULAR_BASE}/recipes/random?number=1&apiKey=${API_KEY}`);
+  if (!res.ok) return NextResponse.json({ status: "offline" }, { status: 503 });
+  return NextResponse.json({ status: "healthy" });
 }
