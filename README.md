@@ -1,8 +1,9 @@
 # ChefBFF
 
 A full-stack recipe sharing and social platform built with Next.js and Supabase. Users can create, discover, and save recipes, follow other cooks, and get AI-powered recipe suggestions from pantry ingredients.
-Vercel Deployment: [ChefBFF](https://chefbff.vercel.app/)
 ---
+Vercel Deployment: [ChefBFF](https://chefbff.vercel.app/)
+
 
 ## Current Features (As of March 2026)
 
