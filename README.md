@@ -9,28 +9,25 @@ A full-stack recipe sharing and social platform built with Next.js and Supabase.
 **Recipe Management**
 - Create recipes with structured ingredients (amount, unit, name), step-by-step instructions, images, category, and cook/prep times
 - Edit, make private, or delete your recipes
-- Import recipes from any URL using Claude AI extraction
+- Import recipes from any URL using Claude API
 
 **Discovery and Browse**
-- Browse all public recipes with full-text search, category filters, cook time filters, and sort options
+- Browse all public recipes with text-search, category filters, cook time filters, and sort options
 - Recipe cards show category, cook time, like count, comment count, and library saves
 
 **Social**
-- Follow other cooks and see their latest recipes in a dedicated feed
+- Follow other cooks and see their latest recipes in the feed section
 - Like and comment on recipes
 - Public profile pages showing a cook's bio, stats, and recipe grid
 
 **Library and Collections**
-- Save recipes to a personal library with a bookmark toggle
-- Organise saved recipes into named collections (public or private)
+- Save recipes to a personal library with a bookmark button
+- Saved recipes into named either public or private collections (
 
-**Dashboard**
-- Persistent sidebar layout for Feed, Library, Cookbooks, Profile, and Discover
-- Mobile-responsive with a bottom tab bar
 
-**AI Features**
-- Pantry to Plate: enter available ingredients, get recipe matches ranked by score with allergen filtering
-- Import from URL: paste any recipe page URL and Claude extracts and pre-fills the create form
+**AI/ML Features In Progress**
+- Pantry to Plate: enter available ingredients you have in your house, get recipe matches ranked by score with allergen filtering
+- Import from URL: paste any recipe page URL and Claude extracts and pre-fills the create form - Finished
 
 ---
 
