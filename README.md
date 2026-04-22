@@ -4,7 +4,7 @@ A full-stack recipe sharing and social platform built with Next.js and Supabase.
 
 ---
 
-## Features
+## Current Features (As of March 2026)
 
 **Recipe Management**
 - Create recipes with structured ingredients (amount, unit, name), step-by-step instructions, images, category, and cook/prep times
