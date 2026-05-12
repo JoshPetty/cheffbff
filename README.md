@@ -46,50 +46,6 @@ Vercel Deployment: [ChefBFF](https://chefbff.vercel.app/)
 
 ---
 
-## Project Structure
-
-```
-chefbff/
-├── app/
-│   ├── api/
-│   │   └── import-recipe/       # Claude-powered URL import endpoint
-│   ├── auth/                    # Login and signup pages
-│   ├── collections/             # Collections list and detail pages
-│   ├── components/
-│   │   ├── Navigation/          # Top navigation bar
-│   │   ├── RecipeCard/          # Shared recipe card component
-│   │   ├── Hero/
-│   │   ├── FeaturedRecipes/
-│   │   └── Footer/
-│   ├── dashboard/               # Sidebar layout and dashboard pages
-│   │   ├── layout.tsx           # Persistent sidebar layout
-│   │   ├── DashboardSidebar.tsx
-│   │   ├── feed/                # Social feed from followed users
-│   │   ├── library/             # Saved recipes
-│   │   ├── collections/         # Cookbooks view
-│   │   └── profile/             # Profile summary and recipe grid
-│   ├── profile/                 # Profile edit page
-│   │   └── [username]/          # Public profile pages
-│   ├── recipe-helper/           # Pantry to Plate AI matcher
-│   ├── recipes/
-│   │   ├── page.tsx             # Browse with search and filters
-│   │   ├── new/                 # Create recipe form
-│   │   ├── [id]/                # Recipe detail, comments, like, save
-│   │   │   └── edit/            # Edit recipe form
-│   │   ├── IngredientRow.tsx    # Structured ingredient input component
-│   │   └── ingredientUtils.ts   # Parse and format ingredient strings
-│   └── page.tsx                 # Homepage
-├── lib/
-│   ├── supabase.ts              # Browser Supabase client
-│   └── supabase-server.ts       # Server Supabase client (cookie-aware)
-├── python/
-│   ├── main.py                  # FastAPI service
-│   ├── matcher.py               # Recipe matching engine
-│   └── requirements.txt
-└── public/
-```
-
----
 
 ## Database Schema
 
